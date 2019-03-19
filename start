@@ -1,0 +1,6 @@
+#!/bin/sh
+echo Starting Scan2VMware server in /home/scan2/scan2VMware
+trap '' 1
+cd /home/scan2/scan2VMware
+./tsk_ctrl.py >/dev/null 2>&1 </dev/null &
+echo $! >/var/tmp/scan2VMware.pid

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension format="1.0">
+	<extension_code>vsphere-data-collector</extension_code>
+	<company>Combodo SARL</company>
+	<author><![CDATA[Christophe]]></author>
+	<label><![CDATA[vSphere Data Collector]]></label>
+	<description><![CDATA[Inventory Data Collector for VMWare Sphere]]></description>
+	<version>1.0.10</version>
+	<release_date>2018-08-24</release_date>
+	<version_description><![CDATA[**Handles TeemIp :**
+
+  * Automatically detects if TeemIp (as an iTop module or as a standalone application) is present.
+  * Optional synchronization of IPv4 addresses
+  * Optional synchronisation of logical interfaces]]></version_description>
+	<itop_version_min></itop_version_min>
+	<status></status>
+	<mandatory>false</mandatory>
+	<more_info_url></more_info_url>
+</extension>

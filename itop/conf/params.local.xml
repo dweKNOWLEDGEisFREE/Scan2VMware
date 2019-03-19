@@ -1,0 +1,34 @@
+<parameters>
+  <itop_url>http://iTopServerIP/</itop_url>
+  <itop_login>sync2user</itop_login>
+  <itop_password>sync2user</itop_password>
+
+  <vsphere_uri>vCenterIP:443</vsphere_uri>
+  <vsphere_login>sync2vmware@vsphere.local</vsphere_login>
+  <vsphere_password>VMware</vsphere_password>
+
+  <contact_to_notify />
+
+  <synchro_user>sync2user</synchro_user>
+
+  <default_org_id>unbekannt</default_org_id>
+
+  <json_placeholders type="hash">
+    <prefix>scan2vmware_1</prefix>
+    <full_load_interval>60</full_load_interval>
+  </json_placeholders>
+
+  <vsphere_connection_options>
+    <ssl>
+      <verify_peer>0</verify_peer>
+      <verify_peer_name>0</verify_peer_name>
+      <allow_self_signed>1</allow_self_signed>
+    </ssl>
+
+    <curl_options>
+      <CURLOPT_SSLVERSION>CURL_SSLVERSION_SSLv3</CURLOPT_SSLVERSION>
+      <CURLOPT_SSL_VERIFYHOST>0</CURLOPT_SSL_VERIFYHOST>
+      <CURLOPT_SSL_VERIFYPEER>0</CURLOPT_SSL_VERIFYPEER>
+    </curl_options>
+  </vsphere_connection_options>
+</parameters>

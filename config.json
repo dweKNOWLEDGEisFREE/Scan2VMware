@@ -1,0 +1,1 @@
+{"Crontab": [{"id": "Scan2VMware", "doClean": true, "time": 0, "doQuery": true}], "vSphere": [{"pwd_1": "VMware", "default_org_id": "unbekannt", "synchro_user": "sync2user", "usr_1": "sync2vmware@vsphere.local", "doQ_1": true, "url_1": "vCenterIP:443"}], "iTop": [{"usr": "sync2user", "pwd": "sync2user", "url": "http://iTopServerIP/"}], "LogFile": [{"age": 28, "number": 100}]}
