@@ -99,6 +99,8 @@ primary_key;name;osfamily_id
 def csv_patching():
     
     def get_IP_2_ORG_NAME(ip):
+        if ip==None or len(ip)==0:
+            return None
         # IP-Range Liste durchsuchen
         n_ip=int(ipaddress.IPv4Address(ip))
         for i in range(len(lst_IpRange)):
@@ -108,6 +110,8 @@ def csv_patching():
         return None
 
     def get_CLIENTNAME_2_ORG_NAME(clientname):
+        if clientname==None or len(clientname)==0:
+            return None
         # Liste durchsuchen
         for i in range(len(lst_IPv4AddressCollector)):
             if lst_IPv4AddressCollector[i][3]==clientname:
@@ -115,6 +119,8 @@ def csv_patching():
         return None
 
     def get_SERVERNAME_2_ORG_NAME(servername):
+        if servername==None or len(servername)==0:
+            return None
         # Liste durchsuchen
         for i in range(len(lst_ServerTeemIpCollector)):
             if lst_ServerTeemIpCollector[i][1]==servername:
@@ -122,6 +128,8 @@ def csv_patching():
         return None
 
     def get_FARMNAME_2_ORG_NAME(servername):
+        if servername==None or len(servername)==0:
+            return None
         # Liste durchsuchen
         for i in range(len(lst_HypervisorCollector)):
             if lst_HypervisorCollector[i][5]==servername:
