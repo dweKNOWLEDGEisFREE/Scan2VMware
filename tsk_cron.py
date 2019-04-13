@@ -1,20 +1,20 @@
-#!/usr/bin/python3.5
-# encoding: utf-8
-''' tsk_cron -- Scan2VMware collector cronjob
-    
-    Scan2VMware will:
- 
-    * Query data from vSphere servers.
-    * CleanUp old log files.
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-    It defines classes_and_methods
+''' tsk_cron - Scan2VMware collector cronjob.
+             * Query data from vSphere servers.
+             * CleanUp old log files.
 
-    @author:     EJS
-    @copyright:  2018 TBD. All rights reserved.
-    @license:    TBD
-    @contact:    TBD
-    @deffield    updated: Updated
+
+    This program is part of the Scan2 Suite.
+    https://github.com/dweKNOWLEDGEisFREE
+
+    This program is licensed under the GNU General Public License v3.0
+
+    Copyright 2019 by David Weyand, Ernst Schmid
+
 '''
+
 
 # IMPORTS
 import sys, os, json, csv, requests, datetime
@@ -97,7 +97,7 @@ primary_key;name;osfamily_id
 ''' iTop VMware cvs Pathing
 '''
 def csv_patching():
-    
+
     def get_IP_2_ORG_NAME(ip):
         if ip==None or len(ip)==0:
             return None
@@ -135,13 +135,13 @@ def csv_patching():
             if lst_HypervisorCollector[i][5]==servername:
                 return lst_HypervisorCollector[i][2]
         return None
-    
+
     def get_CsvSafe(txt):
         if len(txt)==0 or txt.isalnum():
             return txt
         else:
             return '\"'+txt+'\"'
-        
+
 
     # Retrieving IP RANGE LIST
     lst_IpRange=iTopQuery_IpRange()
@@ -155,7 +155,7 @@ def csv_patching():
     # File LOOP
     cnt_file=1
     while os.path.isfile(csv_File_1_i % str(cnt_file)):
-        print('tsk_cron: FILE:', csv_File_1_i % str(cnt_file))    
+        print('tsk_cron: FILE:', csv_File_1_i % str(cnt_file))
         with open(csv_File_1_i % str(cnt_file)) as csv_file:
             # OPEN FILE
             csv_reader = csv.reader(csv_file, delimiter=';')
@@ -167,13 +167,18 @@ def csv_patching():
             flg_rename = False
             # READING
             for row in csv_reader:
+            #   print(str(row))
                 if cnt_line==0:
                     # Index bestimmen
                     try:
                         idx_ip    =row.index('ip')
                         idx_org_id=row.index('org_id')
                         cnt_line+=1
-                    except:
+                        print ('tsk_cron: CSV NO '+
+                               'ip['+str(idx_ip)+'] '+
+                               'org_id['+str(idx_org_id)+']')
+                    except Exception as e:
+                        print(e)
                         break
                     # Inhalt ausgeben
                     for i in range(len(row)):
@@ -190,6 +195,8 @@ def csv_patching():
                         # Ersetzen
                         if i==idx_org_id:
                             tmp=get_IP_2_ORG_NAME(row[idx_ip])
+                            print ('tsk_cron: ['+str(row[idx_ip])+
+                                   '] get_IP_2_ORG_NAME ['+ str(tmp)+']')
                             if tmp!=None and tmp!=dat:
                                 dat=tmp
                                 flg_rename=True
@@ -211,11 +218,10 @@ def csv_patching():
              #  try:
              #  except OSError as e:
              #      print ("ERROR: %s - %s." % (e.filename, e.strerror))
-            print(lst_IPv4AddressCollector)
-            print(len(lst_IPv4AddressCollector))
+        #   print(lst_IPv4AddressCollector)
+            print('tsk_cron: %s elements' % str(len(lst_IPv4AddressCollector)))
         # Next file
         cnt_file+=1
-            
 
     # FILE 2 vSphereServerTeemIpCollector
     # primary_key;name;org_id;serialnumber;status;brand_id;model_id;osfamily_id;
@@ -234,11 +240,12 @@ def csv_patching():
             idx_lookup   = None
             idx_org_id   = None
             idx_special1 = None
-            idx_special2 = None        
+            idx_special2 = None
             cnt_line     = 0
             flg_rename   = False
             # READING
             for row in csv_reader:
+            #   print(str(row))
                 if cnt_line==0:
                     # Index bestimmen
                     try:
@@ -247,6 +254,11 @@ def csv_patching():
                         idx_special1=row.index('model_id')
                         idx_special2=row.index('osversion_id')
                         cnt_line+=1
+                        print ('tsk_cron: CSV NO '+
+                               'managementip_id['+str(idx_lookup)+'] '+
+                               'org_id['+str(idx_org_id)+'] '+
+                               'model_id['+str(idx_special1)+'] '+
+                               'osversion_id['+str(idx_special2)+']')
                     except:
                         break
                     # Inhalt ausgeben
@@ -264,13 +276,15 @@ def csv_patching():
                         # Ersetzen
                         if i==idx_org_id:
                             tmp=get_IP_2_ORG_NAME(row[idx_lookup])
+                            print ('tsk_cron: ['+str(row[idx_lookup])+
+                                   '] get_IP_2_ORG_NAME ['+ str(tmp)+']')
                             if tmp!=None and tmp!=dat:
                                 dat=tmp
                                 flg_rename=True
                         # Speichern
                         inf.append(dat);
                         if (i==idx_special1 or i==idx_special2) and len(dat)>0:
-                            dat='\"'+dat+'\"'                    
+                            dat='\"'+dat+'\"'
                         # Ausgeben
                         if i<len(row)-1:
                             print(dat, file=txt_writer, end=';')
@@ -287,10 +301,10 @@ def csv_patching():
              #  try:
              #  except OSError as e:
              #      print ("ERROR: %s - %s." % (e.filename, e.strerror))
-            print(lst_ServerTeemIpCollector)
-            print(len(lst_ServerTeemIpCollector))
+        #   print(lst_ServerTeemIpCollector)
+            print('tsk_cron: %s elements' % str(len(lst_ServerTeemIpCollector)))
         # Next file
-        cnt_file+=1        
+        cnt_file+=1
 
     # FILE 3 vSphereHypervisorCollector
     # primary_key;name;org_id;status;server_id;farm_id
@@ -311,12 +325,16 @@ def csv_patching():
             flg_rename = False
             # READING
             for row in csv_reader:
+            #   print(str(row))
                 if cnt_line==0:
                     # Index bestimmen
                     try:
                         idx_lookup=row.index('name')
                         idx_org_id=row.index('org_id')
                         cnt_line+=1
+                        print ('tsk_cron: CSV NO '+
+                               'name['+str(idx_lookup)+'] '+
+                               'org_id['+str(idx_org_id)+'] '+']')
                     except:
                         break
                     # Inhalt ausgeben
@@ -334,6 +352,8 @@ def csv_patching():
                         # Ersetzen
                         if i==idx_org_id:
                             tmp=get_SERVERNAME_2_ORG_NAME(row[idx_lookup])
+                            print ('tsk_cron: ['+str(row[idx_lookup])+
+                                   '] get_SERVERNAME_2_ORG_NAME ['+ str(tmp)+']')
                             if tmp!=None and tmp!=dat:
                                 dat=tmp
                                 flg_rename=True
@@ -355,8 +375,8 @@ def csv_patching():
              #  try:
              #  except OSError as e:
              #      print ("ERROR: %s - %s." % (e.filename, e.strerror))
-            print(lst_HypervisorCollector)
-            print(len(lst_HypervisorCollector))
+        #   print(lst_HypervisorCollector)
+            print('tsk_cron: %s elements' % str(len(lst_HypervisorCollector)))
         # Next file
         cnt_file+=1
 
@@ -379,12 +399,16 @@ def csv_patching():
             flg_rename = False
             # READING
             for row in csv_reader:
+            #   print(str(row))
                 if cnt_line==0:
                     # Index bestimmen
                     try:
                         idx_lookup=row.index('name')
                         idx_org_id=row.index('org_id')
                         cnt_line+=1
+                        print ('tsk_cron: CSV NO '+
+                               'name['+str(idx_lookup)+'] '+
+                               'org_id['+str(idx_org_id)+'] '+']')
                     except:
                         break
                     # Inhalt ausgeben
@@ -402,6 +426,8 @@ def csv_patching():
                         # Ersetzen
                         if i==idx_org_id:
                             tmp=get_FARMNAME_2_ORG_NAME(row[idx_lookup])
+                            print ('tsk_cron: ['+str(row[idx_lookup])+
+                                   '] get_FARMNAME_2_ORG_NAME ['+ str(tmp)+']')
                             if tmp!=None and tmp!=dat:
                                 dat=tmp
                                 flg_rename=True
@@ -423,8 +449,8 @@ def csv_patching():
              #  try:
              #  except OSError as e:
              #      print ("ERROR: %s - %s." % (e.filename, e.strerror))
-            print(lst_FarmCollector)
-            print(len(lst_FarmCollector))
+        #   print(lst_FarmCollector)
+            print('tsk_cron: %s elements' % str(len(lst_FarmCollector)))
         # Next file
         cnt_file+=1
 
@@ -450,6 +476,7 @@ def csv_patching():
             flg_rename  = False
             # READING
             for row in csv_reader:
+            #   print(str(row))
                 if cnt_line==0:
                     # Index bestimmen
                     try:
@@ -459,6 +486,12 @@ def csv_patching():
                         idx_special1=row.index('osversion_id')
                         idx_special2=row.index('description')
                         cnt_line+=1
+                        print ('tsk_cron: CSV NO '+
+                               'name['+str(idx_lookup1)+'] '+
+                               'virtualhost_id['+str(idx_lookup2)+'] '+
+                               'org_id['+str(idx_org_id)+'] '+
+                               'osversion_id['+str(idx_special1)+'] '+
+                               'description['+str(idx_special1)+'] '+']')
                     except:
                         break
                     # Inhalt ausgeben
@@ -476,11 +509,15 @@ def csv_patching():
                         # Ersetzen
                         if i==idx_org_id:
                             tmp=get_FARMNAME_2_ORG_NAME(row[idx_lookup1])
+                            print ('tsk_cron: ['+str(row[idx_lookup1])+
+                                   '] get_FARMNAME_2_ORG_NAME ['+ str(tmp)+']')
                             if tmp!=None and tmp!=dat:
                                 dat=tmp
                                 flg_rename=True
                             if tmp==None:
                                 tmp=get_FARMNAME_2_ORG_NAME(row[idx_lookup2])
+                                print ('tsk_cron: ['+str(row[idx_lookup2])+
+                                       '] get_FARMNAME_2_ORG_NAME ['+ str(tmp)+']')
                                 if tmp!=None and tmp!=dat:
                                     dat=tmp
                                     flg_rename=True
@@ -504,15 +541,15 @@ def csv_patching():
              #  try:
              #  except OSError as e:
              #      print ("ERROR: %s - %s." % (e.filename, e.strerror))
-            print(lst_VirtualMachineTeemIp)
-            print(len(lst_VirtualMachineTeemIp))
+        #   print(lst_VirtualMachineTeemIp)
+            print('tsk_cron: %s elements' % str(len(lst_VirtualMachineTeemIp)))
         # Next file
         cnt_file+=1
 
     return 0
 
 
-    
+
 ''' iTop: Requesting all currently IP ranges in use from iTop.
 '''
 def iTopQuery_IpRange():
@@ -546,6 +583,7 @@ def iTopQuery_IpRange():
                                         result['objects'][i]['fields']['firstip'],
                                         result['objects'][i]['fields']['lastip' ]])
     # No data
+#   print (iTop_Lst_IPv4Ranges)
     return iTop_Lst_IPv4Ranges
 
 
@@ -610,7 +648,7 @@ def vSphere_Srv_No():
 '''
 def access_vSphere():
     # Use global
-    global cfg_itop_cr, cfg_vsphere    
+    global cfg_itop_cr, cfg_vsphere
     # Info
     maxNo=vSphere_Srv_No()
     for no in range(1, maxNo+1):
@@ -666,7 +704,7 @@ if __name__ == "__main__":
     # SHOW USER ID
     print('tsk_cron: rUID - %d' % os.getuid())
     print('tsk_cron: eUID - %d' % os.geteuid())
-    
+
     # READ CONFIG
     try:
         with open(cfg_file) as json_file:
@@ -679,7 +717,7 @@ if __name__ == "__main__":
     cfg_vsphere = data['vSphere'][0]
     cfg_crontab = data['Crontab'][0]
     cfg_logfile = data['LogFile'][0]
-                
+
     # CHECKING CONFIG - iTop
     if cfg_itop_cr == None:
         exit(30)
@@ -714,7 +752,7 @@ if __name__ == "__main__":
         access_vSphere()
         # Info
         print('tsk_cron: Stop retrieving VMware data.', file=sys.stdout)
-        
+
     if len(sys.argv)==1 and cfg_crontab['doClean']==True:
         # Info
         print('tsk_cron: Removing outdated log files.', file=sys.stdout)
@@ -775,7 +813,7 @@ if __name__ == "__main__":
     json_inf={"tst_st":tst, "tst_sp":tnd, "status":'STAND BY'}
     with open(inf_file, 'w') as outfile:
         json.dump(json_inf, outfile)
-    
+
     # UPDATE TIME MARKER
     json_log={}
     json_log['cur']=[]
